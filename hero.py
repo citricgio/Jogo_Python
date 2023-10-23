@@ -7,10 +7,10 @@ class Player(pygame.sprite.Sprite):
         self.is_animating = False
         self.is_jumping = False
         self.jumping_height = 10
-        self.sprites.append(pygame.image.load('sprites/image_1.png'))
-        self.sprites.append(pygame.image.load('sprites/image_2.png'))
-        self.sprites.append(pygame.image.load('sprites/image_3.png'))
-        self.sprites.append(pygame.image.load('sprites/image_4.png'))
+        self.sprites.append(pygame.image.load('sprites/hero/image_1.png'))
+        self.sprites.append(pygame.image.load('sprites/hero/image_2.png'))
+        self.sprites.append(pygame.image.load('sprites/hero/image_3.png'))
+        self.sprites.append(pygame.image.load('sprites/hero/image_4.png'))
         #self.sprites.append(pygame.image.load('sprites/image_5.png'))
         #self.sprites.append(pygame.image.load('sprites/image_6.png'))
         
