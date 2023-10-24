@@ -3,7 +3,7 @@ from hero import Player
 from wave import Wave
 from Coin import Coin
 from Menu import PygameMenu 
-from game import game
+from game import Game
 
 
 pygame.init()
@@ -15,8 +15,7 @@ FPS = 60
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 180
 
-score = 0
-hi_score = 0
+
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tsunami Rush")
@@ -53,6 +52,7 @@ moving_coin.add(coin)
 
 
 menu = PygameMenu(screen, ["Start", "Level", "Options"])
+game = Game()
 
 # heroi = pygame.image.load('sprites/image_1.png').convert_alpha()
 
@@ -61,7 +61,7 @@ in_menu = True
 in_game = False
 # game loop
 run = True
-while run:
+while run: 
     clock.tick(FPS)
 
     for event in pygame.event.get():
@@ -77,7 +77,9 @@ while run:
 
 
     elif in_game:
-        game(score,hi_score)
-        score += 0.01
+        game.run()
+        #score += 0.01
+        #scroll += 2
         # heroi_grupo.draw(screen)
+
 pygame.quit()

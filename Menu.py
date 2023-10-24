@@ -1,29 +1,32 @@
 import pygame
 import sys
-from scenario import draw_bg
-from scenario import draw_ground
+from scenario import Background
 
 class PygameMenu:
     def __init__(self, screen, menu_options):
         self.screen = screen
+        self.SCREEN_WIDTH = 600
+        self.SCREEN_HEIGHT = 180
         self.menu_options = menu_options
         self.selected_option = 0
         self.font = pygame.font.Font(None, 36)
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
         self.FPS = 60
+        self.scroll = 0
+        self.background = Background(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, self.screen)
 
     def draw_menu(self):
         self.screen.fill(self.WHITE)
-        draw_bg()
-        draw_ground()
+        self.background.draw_bg(self.scroll)
+        self.background.draw_ground(self.scroll)
 
         title_text = self.font.render("Menu", True, self.BLACK)
-        self.screen.blit(title_text, (200, 100))
+        self.screen.blit(title_text, (230, 30))
 
         for i, option in enumerate(self.menu_options):
             text = self.font.render(option, True, self.BLACK)
-            text_rect = text.get_rect(center=(300, 80 + i * 40))
+            text_rect = text.get_rect(center=(self.SCREEN_WIDTH // 2, 80 + i * 40))
             self.screen.blit(text, text_rect)
 
             if i == self.selected_option:
@@ -58,10 +61,4 @@ class PygameMenu:
             pygame.time.Clock().tick(self.FPS)
 
 # Example usage
-if __name__ == "__main__":
-    pygame.init()
-    screen = pygame.display.set_mode((800, 600))
-    menu = PygameMenu(screen, ["Start", "Level", "Options"])
-    menu.run()
-    pygame.quit()
-    sys.exit()
+
