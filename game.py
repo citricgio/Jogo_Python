@@ -9,17 +9,19 @@ class Game:
     def __init__(self):
         pygame.init()
         self.test_font = pygame.font.Font("font/VT323-Regular.ttf", 25)
-        self.SCREEN_WIDTH = 600
-        self.SCREEN_HEIGHT = 180
+        self.SCREEN_WIDTH = 1100
+        self.SCREEN_HEIGHT = 600
+        self.clock = pygame.time.Clock()
+        self.FPS = 60  
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.moving_sprites = pygame.sprite.Group()
-        self.player = Player(200, 150)
+        self.player = Player(300, 500)
         self.moving_sprites.add(self.player)
         self.moving_wave = pygame.sprite.Group()
-        self.wave = Wave(-18, 1)
+        self.wave = Wave(-18,320)
         self.moving_wave.add(self.wave)
         self.moving_coin = pygame.sprite.Group()
-        self.coin = Coin(250, 125)
+        self.coin = Coin(250, 550)
         self.moving_coin.add(self.coin)
         self.score = 0
         self.hi_score = 0
@@ -27,8 +29,10 @@ class Game:
         self.background = Background(self.SCREEN_WIDTH, self.SCREEN_HEIGHT,self.screen)
 
     def run(self):
-        while True:
-            self.scroll += 4
+        running = True
+        while running:
+            self.clock.tick(self.FPS)  # Control the frame rate
+            self.scroll += 2
             self.background.draw_bg(self.scroll)
             self.background.draw_ground(self.scroll)
             self.draw_game_elements()
@@ -69,3 +73,7 @@ class Game:
         self.screen.blit(self.player.image, self.player.rect.topleft)
 
         pygame.display.update()
+
+game = Game()
+
+game.run()

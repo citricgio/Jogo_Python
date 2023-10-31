@@ -6,17 +6,19 @@ class Player(pygame.sprite.Sprite):
         self.sprites = []
         self.is_animating = False
         self.is_jumping = False
-        self.jumping_height = 10
+        self.jumping_height = 8
         self.sprites.append(pygame.image.load('sprites/hero/image_1.png'))
         self.sprites.append(pygame.image.load('sprites/hero/image_2.png'))
         self.sprites.append(pygame.image.load('sprites/hero/image_3.png'))
         self.sprites.append(pygame.image.load('sprites/hero/image_4.png'))
+        self.jump_vel = 8.5
+        self.jump_sprites = []
+        self.jump_sprites.append(pygame.image.load('sprites/hero/image_5.png'))
+        self.jump_sprites.append(pygame.image.load('sprites/hero/image_6.png'))
+
         #self.sprites.append(pygame.image.load('sprites/image_5.png'))
         #self.sprites.append(pygame.image.load('sprites/image_6.png'))
-        
-        # Additional attributes for jumping
-        self.jump_pixels = 0
-        self.jump_power = 10    
+    
 
         self.current_sprite = 0.0
         self.image = self.sprites[int(self.current_sprite)]
@@ -28,7 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.is_animating == True
 
     def update(self):
-        self.current_sprite += 0.15
+        self.current_sprite += 0.12
     
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0
@@ -40,14 +42,16 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         # Check if mario is jumping and then execute the
         # jumping code.
+
         if self.is_jumping:
-            if self.jumping_height >= -10:
-                neg = 1
-                if self.jumping_height < 0:
-                    neg = -1
-                self.rect.y -= self.jumping_height**2 * 0.3 * neg
-                self.jumping_height -= 1
-            else:
-                self.is_jumping = False
-                self.rect.y=150
-                self.jumping_height = 10
+            self.image = self.jump_sprites[0]
+            self.rect.y -= self.jump_vel * 2.5
+            self.jump_vel -= 0.45
+        
+        if self.jump_vel <= 0:
+            self.image = self.jump_sprites[1]
+
+        if self.jump_vel < -8.5:
+            self.rect.y = 500
+            self.is_jumping = False
+            self.jump_vel = 8.5

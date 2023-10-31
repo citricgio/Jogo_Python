@@ -8,7 +8,7 @@ class Background:
         self.bg_images = []
         self.bg_width = 0
         self.ground_image = pygame.image.load(
-            "Forest_tileset/Tiles/Objects/Sliced/obj_0011_Layer-12.png"
+            "Forest_tileset/Tiles/floor.jpeg"
         ).convert_alpha()
         self.ground_width = self.ground_image.get_width()
         self.ground_height = self.ground_image.get_height()
@@ -31,3 +31,5 @@ class Background:
                 self.ground_image,
                 ((x * self.ground_width) - scroll * 1.0, self.SCREEN_HEIGHT - self.ground_height),
             )
+
+    #def draw_platform(self,scroll)

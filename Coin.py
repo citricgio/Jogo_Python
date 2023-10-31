@@ -26,7 +26,7 @@ class Coin(pygame.sprite.Sprite):
 
     def update(self):
         self.current_sprite += 0.15
-        self.rect.x -= 1.2
+        self.rect.x -= 5
         if self.rect.x <= 0:
             self.rect.x = randint(600,750)
 
