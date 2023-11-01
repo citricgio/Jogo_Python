@@ -6,8 +6,6 @@ class Coin(pygame.sprite.Sprite):
         super().__init__()
         self.sprites = []
         self.is_animating = False
-        self.is_jumping = False
-        self.jumping_height = 10
         self.sprites.append(pygame.image.load('sprites/GoldCoinSprite/Coin1.png').convert_alpha())
         self.sprites.append(pygame.image.load('sprites/GoldCoinSprite/Coin2.png').convert_alpha())
         self.sprites.append(pygame.image.load('sprites/GoldCoinSprite/Coin3.png').convert_alpha())
@@ -28,7 +26,7 @@ class Coin(pygame.sprite.Sprite):
         self.current_sprite += 0.15
         self.rect.x -= 5
         if self.rect.x <= 0:
-            self.rect.x = randint(600,750)
+            self.rect.x = randint(1000,3050)
 
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0

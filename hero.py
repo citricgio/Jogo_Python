@@ -25,6 +25,8 @@ class Player(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
+        self.mask = pygame.mask.from_surface(self.image)
+
         
     def animate(self):
         self.is_animating == True
