@@ -25,7 +25,7 @@ pygame.display.set_caption("Tsunami Rush")
 
 test_font = pygame.font.Font("font/VT323-Regular.ttf", 25)
 
-menu = PygameMenu(screen, ["Start", "Level", "Options"])
+menu = PygameMenu(screen, ["1 PLAYER", "2 PLAYERS", "EXIT"])
 game = Game()
 
 # heroi = pygame.image.load('sprites/image_1.png').convert_alpha()

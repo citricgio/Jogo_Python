@@ -87,15 +87,3 @@ class PygameMenu:
             pygame.display.flip()
             pygame.time.Clock().tick(self.FPS)
 
-pygame.init()
-# Example usage
-SCREEN_WIDTH = 1100
-SCREEN_HEIGHT = 600
-
-test_font = pygame.font.Font("font/VT323-Regular.ttf", 25)
-
-
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-menu = PygameMenu(screen, ["1 PLAYER", "2 PLAYERS", "EXIT"])
-menu.run()
-True
