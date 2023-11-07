@@ -9,6 +9,7 @@ from agent import AIPlayer
 from gameOver import GameOver
 from sprites import Sprites
 import torch
+import os
 class Game:
     def __init__(self):
         self.test_font = pygame.font.Font("font/8-BIT_WONDER.TTF", 25)
@@ -72,8 +73,8 @@ class Game:
 
 
     def draw_game_elements(self):
-        self.moving_sprites.draw(self.screen)
-        self.moving_sprites.update()
+        #self.moving_sprites.draw(self.screen)
+        #self.moving_sprites.update()
         self.moving_coin.draw(self.screen)
         self.moving_coin.update()
         self.moving_wave.draw(self.screen)
@@ -130,7 +131,7 @@ class Game:
         
 
         # Check if the player collides with the coin
-        if self.player.rect.colliderect(self.coin):
+        if self.agent.rect.colliderect(self.coin):
             self.score += 10  # Increase the score when the player collects a coin
             # Move the coin to a new position
             self.coin.rect.x = randint(1000, 3000)  
@@ -139,14 +140,17 @@ class Game:
 
         # Check for collisions with the shark and update the score accordingly
         if (
-            pygame.sprite.spritecollide(self.player, self.moving_shark, False, pygame.sprite.collide_mask)
-            or pygame.sprite.spritecollide(self.shark, self.moving_sprites, False, pygame.sprite.collide_mask)
+            pygame.sprite.spritecollide(self.agent, self.moving_shark, False, pygame.sprite.collide_mask)
+            or pygame.sprite.spritecollide(self.shark, self.moving_ai, False, pygame.sprite.collide_mask)
         ):
             self.score -= 10
             if self.score < 0:
                 self.score = 0
             self.shark.rect.x = randint(1000, 2000)  # Move the shark to a new position
             
+        if self.shark.rect.x <= -50:
+            self.shark.rect.x = randint(1000, 2000)  # Move the shark to a new position
+
             #self.gameOver = GameOver(self.screen,self.score,self.hi_score)   
             #gameOver.run()
 
@@ -175,6 +179,9 @@ class Game:
 
     def reset(self):
         #initialize game state
+        self.score = 0
+
+
         self.agent = AIPlayer(400,520,'sprites/ai_player', 0.05,0)
         self.moving_ai = pygame.sprite.Group()
         self.moving_ai.add(self.agent)
@@ -196,20 +203,64 @@ class Game:
 
 
     def get_state(self):
-        return [self.shark.rect[1],self.shark.rect[1], (self.agent.rect[0] - self.shark.rect[0]), self.agent.rect[1], self.agent.rect[1]]
+        #altura do obstaculo
+        #comprimento do obstaculo
+        #distancia do obstaculo
+        #altura da ia
+        #comprimento da ia
+        #distancia da moeda
+        #altura da moeda
+        #comprimento da moeda
+        #esta pulando
+        is_jumping = None
+        if self.agent.is_jumping:
+            is_jumping = 1
+        else:
+            0
+        return [self.shark.rect[1],self.shark.rect[1], (self.agent.rect[0] - self.shark.rect[0]), self.agent.rect[1], self.agent.rect[1], self.coin.rect[0],self.coin.rect[1],(self.agent.rect[0] - self.coin.rect[0]), is_jumping]
 
     def calculate_reward(self):
         reward = 0
-        if pygame.sprite.spritecollide(self.player, self.moving_shark, False, pygame.sprite.collide_mask):
-            reward =-10
-        else: 
-            reward = 10 
+        if pygame.sprite.spritecollide(self.agent, self.moving_shark, False, pygame.sprite.collide_mask):
+            reward = -1
+        elif self.agent.rect.colliderect(self.coin):
+            reward = 1
+        else:
+            if self.agent.rect.colliderect(self.shark):
+                reward = -0.1  
         return reward
 
-    def is_game_over(self):
+    
+    def calc_reward(self):
+        reward = 0
         if pygame.sprite.spritecollide(self.agent, self.moving_shark, False, pygame.sprite.collide_mask):
+            reward -= 1  #
+        else:
+            distance_to_coin = abs(self.agent.rect.centerx - self.coin.rect.centerx)
+
+            if distance_to_coin < 20 and self.coin.rect.centery > self.agent.rect.centery:
+                if self.agent.is_jumping:
+                    reward += 0.1
+                else:
+                    reward -= 0.1
+        if self.agent.rect.colliderect(self.shark):
+            reward -= 1  # Não está pulando, recompensa ligeiramente negativa
+
+        if self.agent.rect.colliderect(self.coin):
+            reward += 0.8  
+
+        else:
+            reward += 0.2
+        
+
+        return reward
+
+
+    def is_game_over(self):
+        if self.agent.rect.colliderect(self.shark):
             return True
-        return False
+        else:   
+            return False
 
 
 
@@ -220,21 +271,38 @@ class Game:
             self.reset()  # Reset the game state at the beginning of each episode
             done = False  # Flag to indicate if the episode is finished
             state = self.get_state()
-
+            count = 0
             while not done:
+                print(f'--------------------------- \n medidas do agent y: {self.agent.rect[1]} \n medidas do agent x: {self.agent.rect[0]} medidas do tubarao x: {self.shark.rect[0]}')
+
+                #if (self.agent.rect[0] - self.shark.rect[0]) >= -500:
+                #    action = self.agent.select_action(state)
                 action = self.agent.select_action(state)
+
+
+                    
+                print(f'partida: {episode}')
+                print(f'distancia entre tubarao e ai: {(self.agent.rect[0] - self.shark.rect[0])}')
                 print(f'acao tomada; {action}')
                 self.step(action)  # Take the selected action and update the game state
-                reward = self.calculate_reward()
+                reward = self.calc_reward()
                 next_state = self.get_state()
                 done = self.is_game_over()
-                print(f'reward')
-                print(done)
+                print(f'Recompensa: {reward}')
+                print(f'Game over: {done}')
                 self.agent.learn(state, action, reward, next_state, done)
                 state = next_state
-
-
+        
+        lst = len(os.listdir('runs/'))
+        if os.path.exists(f'runs/ml-model-test-{lst}/') == False:
+            os.mkdir(f'runs/ml-model-test-{lst}/')
+        torch.save({
+            'model_state_dict': self.agent.q_network.state_dict(),
+            'optimizer_state_dict': self.agent.optimizer.state_dict(),
+            }, f'runs/ml-model-test-{lst}/model.pt')
 
 pygame.init()
 game = Game()
-game.train(10)  # Train for 100 episodes
+
+n = int(input('numero de partidas: '))
+game.train(n)  # Train for 100 episodes

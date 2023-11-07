@@ -23,15 +23,15 @@ class AIPlayer(Sprites):
         ###################
 
         self.n_games = 0
-        self.epsilon = 1.0
+        self.epsilon = 0.2
         self.gamma = 0
-        self.learning_rate = 0.001
+        self.learning_rate = 0.01
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.state_size = 5
+        self.state_size = 8
         self.action_size = 2
         self.q_network = QNetwork(self.state_size, self.action_size)
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.learning_rate)
-        self.epsilon_decay = 0.995
+        self.epsilon_decay = 0.5
         self.min_epsilon = 0.01
 
     def jump(self):
@@ -57,21 +57,6 @@ class AIPlayer(Sprites):
             return 1  # Pular
         else:
             return 0  # Não fazer nada
-
-    #altura do obstaculo
-    #comprimento do obstaculo
-    #distancia do obstaculo
-    #altura da ia
-    #comprimento da ia
-
-
-#    def select_action(self, state):
-#        if torch.rand(1).item() < self.epsilon:
-#            return randint(0, 1)  # Explorar
-#        else:
-#            with torch.no_grad():
-#                action = self.q_network(state)
-#                return action.argmax().item()  # Explorar
 
 
     def select_action(self, state):
@@ -99,7 +84,7 @@ class AIPlayer(Sprites):
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-
+            print(f'Loss {loss.item():.4f}')
             if self.epsilon > self.min_epsilon:
                 self.epsilon *= self.epsilon_decay
 
