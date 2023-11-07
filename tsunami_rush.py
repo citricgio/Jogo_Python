@@ -3,20 +3,17 @@ from hero import Player
 from wave import Wave
 from Coin import Coin
 from Menu import PygameMenu 
-from game import game
+from game import Game
 
 
 pygame.init()
 
-clock = pygame.time.Clock()
-FPS = 60
-
 # create game window
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 180
+SCREEN_WIDTH = 1100
+#1100
+SCREEN_HEIGHT = 600
+#600
 
-score = 0
-hi_score = 0
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tsunami Rush")
@@ -28,31 +25,8 @@ pygame.display.set_caption("Tsunami Rush")
 
 test_font = pygame.font.Font("font/VT323-Regular.ttf", 25)
 
-
-##########################
-#       PLAYER VAR       #
-##########################
-moving_sprites = pygame.sprite.Group()
-player = Player(200, 150)
-moving_sprites.add(player)
-
-##########################
-#       WAVE VAR       #
-##########################
-moving_wave = pygame.sprite.Group()
-wave = Wave(-18, 1)
-moving_wave.add(wave)
-
-
-#########################
-#       COIN VAR        #
-#########################
-moving_coin = pygame.sprite.Group()
-coin = Coin(250, 125)
-moving_coin.add(coin)
-
-
-menu = PygameMenu(screen, ["Start", "Level", "Options"])
+menu = PygameMenu(screen, ["1 PLAYER", "2 PLAYERS", "EXIT"])
+game = Game()
 
 # heroi = pygame.image.load('sprites/image_1.png').convert_alpha()
 
@@ -61,8 +35,7 @@ in_menu = True
 in_game = False
 # game loop
 run = True
-while run:
-    clock.tick(FPS)
+while run: 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -77,7 +50,9 @@ while run:
 
 
     elif in_game:
-        game(score,hi_score)
-        score += 0.01
+        game.run()
+        #score += 0.01
+        #scroll += 2
         # heroi_grupo.draw(screen)
+
 pygame.quit()
