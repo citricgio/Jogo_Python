@@ -27,7 +27,7 @@ class AIPlayer(Sprites):
         self.gamma = 0
         self.learning_rate = 0.01
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.state_size = 8
+        self.state_size = 9
         self.action_size = 2
         self.q_network = QNetwork(self.state_size, self.action_size)
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.learning_rate)

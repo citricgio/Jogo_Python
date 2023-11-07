@@ -216,7 +216,7 @@ class Game:
         if self.agent.is_jumping:
             is_jumping = 1
         else:
-            0
+            is_jumping = 0
         return [self.shark.rect[1],self.shark.rect[1], (self.agent.rect[0] - self.shark.rect[0]), self.agent.rect[1], self.agent.rect[1], self.coin.rect[0],self.coin.rect[1],(self.agent.rect[0] - self.coin.rect[0]), is_jumping]
 
     def calculate_reward(self):
@@ -276,6 +276,8 @@ class Game:
                 print(f'--------------------------- \n medidas do agent y: {self.agent.rect[1]} \n medidas do agent x: {self.agent.rect[0]} medidas do tubarao x: {self.shark.rect[0]}')
 
                 #if (self.agent.rect[0] - self.shark.rect[0]) >= -500:
+                
+                
                 #    action = self.agent.select_action(state)
                 action = self.agent.select_action(state)
 
