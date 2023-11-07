@@ -8,6 +8,7 @@ from time import sleep
 from agent import AIPlayer
 from gameOver import GameOver
 from sprites import Sprites
+import torch
 class Game:
     def __init__(self):
         self.test_font = pygame.font.Font("font/8-BIT_WONDER.TTF", 25)
@@ -92,7 +93,14 @@ class Game:
                     self.player.is_jumping = True
 
 
-    def step(self):
+    def step(self,action):
+        self.scroll += 4
+        self.background.draw_bg(self.scroll)
+        self.background.draw_ground(self.scroll)
+        self.draw_game_elements()
+        self.handle_events()
+        self.render_scores()
+        pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -107,7 +115,7 @@ class Game:
         self.score += 0.02  # Increment the score over time
 
 
-        action = self.agent.select_action([self.shark.get_size()[1],self.shark.get_size()[1], (self.ai_player.get_size()[0] - self.shark.get_size()[0]), self.ai_player.get_size()[1], self.ai_player.get_size()[1]])
+        #action = self.agent.select_action([self.shark.rect[1],self.shark.rect[1], (self.agent.rect[0] - self.shark.rect[0]), self.agent.rect[1], self.agent.rect[1]])
 
 
         # Perform AI action
@@ -161,33 +169,72 @@ class Game:
     
         #self.screen.blit(self.player.image, self.player.rect.topleft)
 
-
-
-
     ####################################
     #           METODOS DA IA          #
     ####################################
 
     def reset(self):
         #initialize game state
-        self.player = Player(300, 500)
-        self.moving_sprites = pygame.sprite.Group()
-        self.moving_sprites.add(self.player)
+        self.agent = AIPlayer(400,520,'sprites/ai_player', 0.05,0)
+        self.moving_ai = pygame.sprite.Group()
+        self.moving_ai.add(self.agent)
+        
         self.moving_wave = pygame.sprite.Group()
-        self.wave = Wave(-18, 320)
+        self.wave = Sprites(-9, 320, 'sprites/WAVE', 0.05, 0)
         self.moving_wave.add(self.wave)
+
+        #Grupo de sprites da moeda
         self.moving_coin = pygame.sprite.Group()
-        self.coin = Coin(randint(900, 1000), 500)
+        self.coin = Sprites(randint(600, 1000), 500, 'sprites/GoldCoinSprite', 0.15, 5)
         self.moving_coin.add(self.coin)
 
+        #Grupo de sprites do tubarao
+        self.moving_shark = pygame.sprite.Group()
+        self.shark = Sprites(2500, 430, 'sprites/shark', 0.15, 10)
+        self.moving_shark.add(self.shark)
+
+
+
     def get_state(self):
-        return []
+        return [self.shark.rect[1],self.shark.rect[1], (self.agent.rect[0] - self.shark.rect[0]), self.agent.rect[1], self.agent.rect[1]]
+
+    def calculate_reward(self):
+        reward = 0
+        if pygame.sprite.spritecollide(self.player, self.moving_shark, False, pygame.sprite.collide_mask):
+            reward =-10
+        else: 
+            reward = 10 
+        return reward
+
+    def is_game_over(self):
+        if pygame.sprite.spritecollide(self.agent, self.moving_shark, False, pygame.sprite.collide_mask):
+            return True
+        return False
+
+
+
+
+    def train(self, num_episodes):
+
+        for episode in range(num_episodes):
+            self.reset()  # Reset the game state at the beginning of each episode
+            done = False  # Flag to indicate if the episode is finished
+            state = self.get_state()
+
+            while not done:
+                action = self.agent.select_action(state)
+                print(f'acao tomada; {action}')
+                self.step(action)  # Take the selected action and update the game state
+                reward = self.calculate_reward()
+                next_state = self.get_state()
+                done = self.is_game_over()
+                print(f'reward')
+                print(done)
+                self.agent.learn(state, action, reward, next_state, done)
+                state = next_state
 
 
 
 pygame.init()
-
 game = Game()
-
-
-game.run()
+game.train(10)  # Train for 100 episodes

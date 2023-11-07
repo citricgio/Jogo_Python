@@ -17,22 +17,6 @@ class AIPlayer(Sprites):
         self.jump_sprites = []
         self.jump_sprites.append(pygame.image.load('sprites/ai_player/jump/image_8.png'))
         self.jump_sprites.append(pygame.image.load('sprites/ai_player/jump/image_9.png'))
-
-    def jump(self):
-        if self.is_jumping:
-            self.image = self.jump_sprites[0]
-            self.rect.y -= self.jump_vel * 2.5
-            self.jump_vel -= 0.45
-
-        if self.jump_vel <= 0:
-            self.image = self.jump_sprites[1]
-
-        if self.jump_vel < -8.5:
-            self.rect.y = 500
-            self.is_jumping = False
-            self.jump_vel = 8.5
-
-
         
         #####################
         # Parâmetros da IA #
@@ -50,6 +34,23 @@ class AIPlayer(Sprites):
         self.epsilon_decay = 0.995
         self.min_epsilon = 0.01
 
+    def jump(self):
+        if self.is_jumping:
+            self.image = self.jump_sprites[0]
+            self.rect.y -= self.jump_vel * 2.5
+            self.jump_vel -= 0.45
+
+        if self.jump_vel <= 0:
+            self.image = self.jump_sprites[1]
+
+        if self.jump_vel < -8.5:
+            self.rect.y = 500
+            self.is_jumping = False
+            self.jump_vel = 8.5
+
+
+        
+
 
     def make_decision(self):
         if self.rect.y < 400: 
@@ -64,28 +65,43 @@ class AIPlayer(Sprites):
     #comprimento da ia
 
 
+#    def select_action(self, state):
+#        if torch.rand(1).item() < self.epsilon:
+#            return randint(0, 1)  # Explorar
+#        else:
+#            with torch.no_grad():
+#                action = self.q_network(state)
+#                return action.argmax().item()  # Explorar
+
+
     def select_action(self, state):
+        state_tensor = torch.tensor(state, dtype=torch.float)
         if torch.rand(1).item() < self.epsilon:
-            return randint(0, self.action_size - 1)  # Explorar
+            return randint(0, 1)  # Explore
         else:
             with torch.no_grad():
-                action = self.q_network(state)
-                return action.argmax().item()  # Explorar
+                action = self.q_network(state_tensor)
+                return action.argmax().item()  # Exploit
+
 
     def learn(self, state, action, reward, next_state, done):
-        q_values = self.q_network(state)
-        next_q_values = self.q_network(next_state)
-        max_next_q_value = next_q_values.max().unsqueeze(0)
-        target_q_value = torch.tensor(reward) + self.gamma * max_next_q_value * torch.tensor(1)
-        
-        loss = nn.MSELoss()(q_values[action], target_q_value)
-        
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+            state_tensor = torch.tensor(state, dtype=torch.float)
+            next_state_tensor = torch.tensor(next_state, dtype=torch.float)
 
-        if self.epsilon > self.min_epsilon:
-            self.epsilon *= self.epsilon_decay
+            q_values = self.q_network(state_tensor)
+            next_q_values = self.q_network(next_state_tensor)
+            max_next_q_value = next_q_values.max().unsqueeze(0)
+
+            target_q_value = torch.tensor(reward, dtype=torch.float) + self.gamma * max_next_q_value
+
+            loss = nn.MSELoss()(q_values[action], target_q_value)
+
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+
+            if self.epsilon > self.min_epsilon:
+                self.epsilon *= self.epsilon_decay
 
 class QNetwork(nn.Module):
     def __init__(self, state_size, action_size):
