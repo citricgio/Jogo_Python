@@ -39,6 +39,7 @@ class Game:
         self.shark = Sprites(2500, 430, 'sprites/shark', 0.15, 10)
         self.moving_shark.add(self.shark)
 
+        # Grupo de Sprites da Bomba
         self.moving_bomb = pygame.sprite.Group()
         self.bomb = Sprites(randint(600, 1000), 500, 'sprites/bomb', 0.0, 5)
         self.moving_bomb.add(self.bomb)
