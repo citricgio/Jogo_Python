@@ -16,6 +16,9 @@ Na implementação do segundo personagem utilizamos o framework pytorch, para o 
 
 
 ### Prévia do treinamento
-https://github.com/citricgio/Jogo_Python/assets/103596102/a2647594-c9dd-457f-9abb-686d4d0b22b2
+
+https://github.com/citricgio/Jogo_Python/assets/103596102/293a8540-12c1-40fb-9671-55e4e0e0df1c
+
+
 
 
