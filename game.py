@@ -44,6 +44,7 @@ class Game:
         self.bomb = Sprites(randint(600, 1000), 500, 'sprites/bomb', 0.0, 5)
         self.moving_bomb.add(self.bomb)
 
+        # Grupo de sprites da ia
         self.moving_ai = pygame.sprite.Group()
         self.agent = AIPlayer(400,520,'sprites/ai_player', 0.05,0)
         self.moving_ai.add(self.agent)
