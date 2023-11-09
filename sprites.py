@@ -23,6 +23,10 @@ class Sprites(pygame.sprite.Sprite):
         self.rect.topleft = [pos_x, pos_y]
         self.mask = pygame.mask.from_surface(self.image)
 
+        self.is_jumping = False
+        self.jump_vel = 5
+        self.jump_sprites = self.sprites
+
     def animate(self):
         self.is_animating = True
 
@@ -36,3 +40,13 @@ class Sprites(pygame.sprite.Sprite):
             self.current_sprite = 0
             self.is_animating = False
         self.image = self.sprites[int(self.current_sprite)]
+    
+    def jump(self):
+        if self.is_jumping:
+            self.rect.y -= self.jump_vel * 1.5
+            self.jump_vel -= 0.16
+
+        if self.jump_vel < -5:
+            self.rect.y = 500
+            self.is_jumping = False
+            self.jump_vel = 5

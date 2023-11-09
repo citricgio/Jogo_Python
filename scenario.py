@@ -18,6 +18,7 @@ class Background:
             self.bg_images.append(bg_image)
         self.bg_width = self.bg_images[0].get_width()
 
+
     def draw_bg(self, scroll):
         for x in range(2000):
             speed = 1
@@ -31,5 +32,6 @@ class Background:
                 self.ground_image,
                 ((x * self.ground_width) - scroll * 1.0, self.SCREEN_HEIGHT - self.ground_height),
             )
+            x += 1
 
     #def draw_platform(self,scroll)
