@@ -1,5 +1,11 @@
 {
     "python.autoComplete.extraPaths": [
         "/home/king/.vscode-oss/extensions/continue.continue-0.0.412-linux-x64"
+<<<<<<< HEAD
+=======
+    ],
+    "python.analysis.extraPaths": [
+        "/home/king/.vscode-oss/extensions/continue.continue-0.0.412-linux-x64"
+>>>>>>> 9b02948 (bomba)
     ]
 }
