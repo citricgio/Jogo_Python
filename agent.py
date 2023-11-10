@@ -11,7 +11,7 @@ MAX_MEMORY = 10000
 
 class AIPlayer(Sprites):
 
-    def __init__(self, pos_x, pos_y, player_path, current_sprite, run_speed, state_size, action_size, epsilon_decay=0.995, min_epsilon=0.01, gamma=0.99,replay_buffer_size=20000):
+    def __init__(self, pos_x, pos_y, player_path, current_sprite, run_speed, state_size, action_size, epsilon_decay=0.5, min_epsilon=0.01, gamma=0.99,replay_buffer_size=20000):
         super().__init__(pos_x, pos_y, player_path, current_sprite, run_speed)
         self.is_jumping = False
         self.jump_vel = 8.5
@@ -27,7 +27,7 @@ class AIPlayer(Sprites):
         self.target_q_network = QNetwork(state_size, action_size)
         self.target_q_network.load_state_dict(self.q_network.state_dict())
         self.optimizer = Adam(self.q_network.parameters(), lr=0.001)
-        self.epsilon = 0.8
+        self.epsilon = 1.0
         self.epsilon_decay = epsilon_decay
         self.min_epsilon = min_epsilon
         self.gamma = gamma
@@ -36,6 +36,11 @@ class AIPlayer(Sprites):
         self.batch_size = 64  # You can adjust this according to your needs
         self.global_step = 0
         self.target_update_freq = 100  # Update target network every 100 steps
+
+        #load train weights
+        #checkpoint = torch.load('runs/ml-model-test-117/model.pt')
+        #self.q_network.load_state_dict(checkpoint['model_state_dict'])
+        #self.target_q_network.load_state_dict(checkpoint['model_state_dict'])
 
 
 
@@ -147,8 +152,8 @@ class QNetwork(nn.Module):
     torch.manual_seed(42)
     def __init__(self, state_size, action_size):
         super(QNetwork, self).__init__()
-        self.fc1 = nn.Linear(state_size, 8)    
-        self.fc2 = nn.Linear(8, 8)
+        self.fc1 = nn.Linear(state_size, 20)    
+        self.fc2 = nn.Linear(20, 8)
         self.fc3 = nn.Linear(8, action_size)
 
     def forward(self, state):
